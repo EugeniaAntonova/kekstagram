@@ -15,6 +15,22 @@ const scaleControlInput = document.querySelector('.scale__control--value');
 
 const IMAGE_SIZE_STEP = 25;
 
+// -------------------reading file and uploading previews
+
+function readFile (input) {
+  const file = input.files[0];
+  const reader = new FileReader();
+
+  reader.readAsDataURL(file);
+  reader.onload = (evt) => {
+    imagePreview.innerHTML = `<img src="${evt.target.result}" alt="Фото">`;
+    previews.forEach((preview) => {
+      preview.style.backgroundImage = `url(${evt.target.result})`;
+    });
+  };
+}
+
+// --------------changing size of the preview
 
 const changeSize = (change) => {
   const currentValue = parseInt(scaleControlInput.value);
@@ -36,22 +52,22 @@ const changeSize = (change) => {
 
 const onBiggerButtonClick = () => changeSize(IMAGE_SIZE_STEP);
 const onSmallerButtonClick = () => changeSize(-IMAGE_SIZE_STEP);
-// const pristine = new Pristine(userForm, {
-//   classTo: 'input-wrapper',
-//   errorTextParent: 'input-wrappper',
-//   errorTextClass: 'input-error'
-// });
 
-// pristine.addValidator(
-//   hashtagField,
-//   validateTags,
-//   'Неправильно заполнены хэштеги'
-// );
+// -------------------------util function i don`t know how to remove from here
 
-// const onFormSubmit = (evt) => {
-//   evt.preventDefault();
-//   pristine.validate();
-// };
+const onEsc = (evt) => {
+  if (isEsc(evt)) {
+    hideModal();
+  }
+}
+
+const onOverlayClick = (evt) => {
+  if (evt.target === uploadOverlay) {
+    hideModal();
+  }
+}
+
+//--------------------------handling modal conditions
 
 const hideModal = () => {
   uploadOverlay.classList.add('hidden');
@@ -73,17 +89,15 @@ const showModal = () => {
 
   document.addEventListener('keydown', onEsc);
   uploadCancelButton.addEventListener('click', hideModal);
+  uploadOverlay.addEventListener('click', onOverlayClick);
 
   buttonBigger.addEventListener('click', onBiggerButtonClick);
   buttonSmaller.addEventListener('click', onSmallerButtonClick);
+
   filters.addEventListener('input', chooseFilter);
 };
 
-function onEsc (evt) {
-  if (isEsc(evt)) {
-    hideModal();
-  }
-}
+// -----------handling effects
 
 const addEffect = (input) => {
   const image = imagePreview.querySelector('img');
@@ -96,7 +110,10 @@ const chooseFilter = (evt) => {
   addEffect(filter);
 }
 
-function test () {
+
+// -----------------final function to export
+
+const modalControl = () => {
   photoInput.addEventListener('input', () => {
     showModal();
   });
@@ -104,23 +121,6 @@ function test () {
   photoInput.addEventListener('change', () => {
     readFile(photoInput);
   });
-
-    // userForm.addEventListener('submit', () => {
-    //   onFormSubmit();
-    // });
-  }
-
-function readFile (input) {
-  const file = input.files[0];
-  const reader = new FileReader();
-
-  reader.readAsDataURL(file);
-  reader.onload = (evt) => {
-    imagePreview.innerHTML = `<img src="${evt.target.result}" alt="Фото">`;
-    previews.forEach((preview) => {
-      preview.style.backgroundImage = `url(${evt.target.result})`;
-    });
-  };
 }
 
-export { test };
+export { modalControl };

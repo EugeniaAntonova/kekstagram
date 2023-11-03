@@ -1,10 +1,13 @@
 import { isEsc } from './utils.js';
 const bigPicture = document.querySelector('.big-picture');
+const bigPictureOverlay = document.querySelector('.overlay');
 const commentCount = document.querySelector('.comments-count');
 const commentList = document.querySelector('.social__comments');
 const commentsLoader = document.querySelector('.comments-loader');
 const cancelButton = document.querySelector('.big-picture__cancel');
 const body = document.querySelector('body');
+
+// ---------------------------------filling up the markup with our data
 
 const createComment = ({avatar, name, message}) => {
   const comment = document.createElement('li');
@@ -29,19 +32,6 @@ const renderComments = (comments) => {
   commentList.append(fragment);
 };
 
-const hideBigPicture = () => {
-  bigPicture.classList.add('hidden');
-  body.classList.remove('modal-open');
-  document.removeEventListener('keydown', onEscKeyDown);
-};
-
-function onEscKeyDown (evt) {
-  if(isEsc(evt)) {
-    evt.preventDefault();
-    hideBigPicture();
-  }
-}
-
 const renderPictureDetails = ({ url, likes, description}) => {
   bigPicture.querySelector('.big-picture__img img').src = url;
   bigPicture.querySelector('.big-picture__img img').alt = description;
@@ -50,11 +40,38 @@ const renderPictureDetails = ({ url, likes, description}) => {
 
 };
 
+// ------------------setting functions to close everything
+
+
+function onEscKeyDown (evt) {
+  if(isEsc(evt)) {
+    evt.preventDefault();
+    hideBigPic();
+  }
+}
+
+function onOverlayClick (evt) {
+  if (evt.target === bigPictureOverlay) {
+    hideBigPic();
+  }
+}
+
+// ------------------------------big picture controls
+
+const hideBigPic = () => {
+  bigPicture.classList.add('hidden');
+  body.classList.remove('modal-open');
+  document.removeEventListener('keydown', onEscKeyDown);
+  cancelButton.removeEventListener('click', hideBigPic);
+  bigPictureOverlay.removeEventListener('click', onOverlayClick);
+};
 
 const showBigPic = (data) => {
   bigPicture.classList.remove('hidden');
   body.classList.add('modal-open');
   document.addEventListener('keydown', onEscKeyDown);
+  bigPictureOverlay.addEventListener('click', onOverlayClick);
+  cancelButton.addEventListener('click', hideBigPic);
 
   renderPictureDetails(data);
   renderComments(data.comments);
@@ -63,7 +80,7 @@ const showBigPic = (data) => {
   if (data.comments.length > 5) {
     commentsLoader.classList.remove('hidden');
     commentsLoader.addEventListener('click', () => {
-      
+
     })
     const comments = commentList.querySelectorAll('li');
     for (let i = 5; i < comments.length; i++) {
@@ -73,8 +90,6 @@ const showBigPic = (data) => {
     commentsLoader.classList.add('hidden');
   }
 };
-
-cancelButton.addEventListener('click', () => {hideBigPicture();});
 
 export { showBigPic };
 
