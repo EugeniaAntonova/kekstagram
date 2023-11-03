@@ -13,29 +13,29 @@ const buttonSmaller = document.querySelector('.scale__control--smaller');
 const buttonBigger = document.querySelector('.scale__control--bigger');
 const scaleControlInput = document.querySelector('.scale__control--value');
 
-const applySize = () => {
-  const value = Number(scaleControlInput.value.slice(0, -1));
-  imagePreview.querySelector('img').style.transform = `scale(${value / 100})`;
-}
+const IMAGE_SIZE_STEP = 25;
 
-const makeBigger = () => {
-  const currentValue = Number(scaleControlInput.value.slice(0, -1));
-  const newValue = currentValue + 25;
-  if (newValue <= 100) {
-    scaleControlInput.setAttribute('value', `${newValue + scaleControlInput.value.slice(-1)}`);
-    applySize();
+
+const changeSize = (change) => {
+  const currentValue = parseInt(scaleControlInput.value);
+  console.log(currentValue);
+  console.log(typeof(currentValue));
+  const newValue = currentValue + change;
+  console.log(newValue);
+  console.log(typeof(newValue));
+
+  const applySize = (value) => {
+    imagePreview.querySelector('img').style.transform = `scale(${value / 100})`;
+  }
+
+  if (newValue >= 0 && newValue <= 100) {
+    scaleControlInput.setAttribute('value', `${newValue}%`);
+    applySize(newValue);
   }
 }
-const makeSmaller = () => {
-  const currentValue = Number(scaleControlInput.value.slice(0, -1));
-  const newValue = currentValue - 25;
-  if (newValue - 25 >= 0) {
-    scaleControlInput.setAttribute('value', `${newValue + scaleControlInput.value.slice(-1)}`);
-    applySize();
-  }
-}
 
-
+const onBiggerButtonClick = () => changeSize(IMAGE_SIZE_STEP);
+const onSmallerButtonClick = () => changeSize(-IMAGE_SIZE_STEP);
 // const pristine = new Pristine(userForm, {
 //   classTo: 'input-wrapper',
 //   errorTextParent: 'input-wrappper',
@@ -62,8 +62,8 @@ const hideModal = () => {
   photoInput.value = '';
 
   scaleControlInput.setAttribute('value', '100%');
-  buttonBigger.removeEventListener('click', makeBigger);
-  buttonSmaller.removeEventListener('click', makeSmaller);
+  buttonBigger.removeEventListener('click', onBiggerButtonClick);
+  buttonSmaller.removeEventListener('click', onSmallerButtonClick);
   filters.removeEventListener('input', chooseFilter);
 };
 
@@ -74,13 +74,12 @@ const showModal = () => {
   document.addEventListener('keydown', onEsc);
   uploadCancelButton.addEventListener('click', hideModal);
 
-  buttonBigger.addEventListener('click', makeBigger);
-  buttonSmaller.addEventListener('click', makeSmaller);
+  buttonBigger.addEventListener('click', onBiggerButtonClick);
+  buttonSmaller.addEventListener('click', onSmallerButtonClick);
   filters.addEventListener('input', chooseFilter);
 };
 
 function onEsc (evt) {
-  evt.preventDefault();
   if (isEsc(evt)) {
     hideModal();
   }
@@ -105,9 +104,6 @@ function test () {
   photoInput.addEventListener('change', () => {
     readFile(photoInput);
   });
-
-
-
 
     // userForm.addEventListener('submit', () => {
     //   onFormSubmit();
