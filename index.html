@@ -10,7 +10,6 @@
 </head>
 
 <body>
-  <script type="module" src="/js/main.js"></script>
   <main>
 
     <!-- Фильтрация изображений от других пользователей -->
@@ -116,11 +115,12 @@
 
                 <!-- Добавление хэш-тегов и комментария к изображению -->
                 <fieldset class="img-upload__text text">
-                  <div class="input-wrapper">
-                    <input class="text__hashtags" name="hashtags" type="text" placeholder="#ХэшТег">
+                  <div class="img-upload__element">
+                    <input class="text__hashtags" name="hashtags" placeholder="#ХэшТег">
                   </div>
-                  <div class="input-wrapper">
-                    <textarea class="text__description" name="description" maxlength="140" placeholder="Ваш комментарий..."></textarea>
+                  <div class="img-upload__element">
+                    <textarea class="text__description" name="description" placeholder="Ваш комментарий..." maxlength="140"
+                  data-pristine-maxlength-message="Комментарий не может быть длиннее 140 символов"></textarea>
                   </div>
                 </fieldset>
 
@@ -234,6 +234,7 @@
   <template id="messages">
     <div class="img-upload__message  img-upload__message--loading">Загружаем...</div>
   </template>
-  <!-- <script src="pristine/pristine.min.js"></script> -->
+  <script src="pristine/pristine.min.js"></script>
+  <script type="module" src="/js/main.js"></script>
 </body>
 </html>

@@ -9,6 +9,16 @@ const body = document.querySelector('body');
 
 // ---------------------------------filling up the markup with our data
 
+const renderPictureDetails = ({ url, likes, description}) => {
+  bigPicture.querySelector('.big-picture__img img').src = url;
+  bigPicture.querySelector('.big-picture__img img').alt = description;
+  bigPicture.querySelector('.likes-count').textContent = likes;
+  bigPicture.querySelector('.social__caption').textContent = description;
+
+};
+
+// -----------------------------------creating comments and adding them to the markup
+
 const createComment = ({avatar, name, message}) => {
   const comment = document.createElement('li');
   comment.classList.add('social__comment');
@@ -32,13 +42,59 @@ const renderComments = (comments) => {
   commentList.append(fragment);
 };
 
-const renderPictureDetails = ({ url, likes, description}) => {
-  bigPicture.querySelector('.big-picture__img img').src = url;
-  bigPicture.querySelector('.big-picture__img img').alt = description;
-  bigPicture.querySelector('.likes-count').textContent = likes;
-  bigPicture.querySelector('.social__caption').textContent = description;
+const showMoreComments = (hiddenComments) => {
+  const hiddenCommentsArray = [...hiddenComments];
+  const nextComments = hiddenCommentsArray.slice(0, 5);
+  nextComments.forEach((comment) => {
+    comment.classList.remove('hidden');});
 
+  if (nextComments.length === 0) {
+    commentsLoader.classList.add('hidden');
+  }
 };
+
+const commentsAmountControl = () => {
+  const comments = commentList.children;
+
+  if (comments.length > 5) {
+    for (let i = 5; i < comments.length; i++) {
+      comments[i].classList.add('hidden');
+    }
+
+    const hiddenComments = commentList.getElementsByClassName('hidden');
+
+    commentsLoader.classList.remove('hidden');
+
+    const onLoaderClick = () => {showMoreComments(hiddenComments);};
+
+    commentsLoader.addEventListener('click', onLoaderClick);
+  }
+};
+
+// ------------------------------big picture controls
+
+const hideBigPic = () => {
+  bigPicture.classList.add('hidden');
+  body.classList.remove('modal-open');
+  document.removeEventListener('keydown', onEscKeyDown);
+  cancelButton.removeEventListener('click', hideBigPic);
+  bigPictureOverlay.removeEventListener('click', onOverlayClick);
+};
+
+
+const showBigPic = (data) => {
+  bigPicture.classList.remove('hidden');
+  body.classList.add('modal-open');
+  document.addEventListener('keydown', onEscKeyDown);
+  bigPictureOverlay.addEventListener('click', onOverlayClick);
+  cancelButton.addEventListener('click', hideBigPic);
+
+  commentCount.textContent = data.comments.length;
+  renderPictureDetails(data);
+  renderComments(data.comments);
+  commentsAmountControl(data);
+};
+
 
 // ------------------setting functions to close everything
 
@@ -56,40 +112,4 @@ function onOverlayClick (evt) {
   }
 }
 
-// ------------------------------big picture controls
-
-const hideBigPic = () => {
-  bigPicture.classList.add('hidden');
-  body.classList.remove('modal-open');
-  document.removeEventListener('keydown', onEscKeyDown);
-  cancelButton.removeEventListener('click', hideBigPic);
-  bigPictureOverlay.removeEventListener('click', onOverlayClick);
-};
-
-const showBigPic = (data) => {
-  bigPicture.classList.remove('hidden');
-  body.classList.add('modal-open');
-  document.addEventListener('keydown', onEscKeyDown);
-  bigPictureOverlay.addEventListener('click', onOverlayClick);
-  cancelButton.addEventListener('click', hideBigPic);
-
-  renderPictureDetails(data);
-  renderComments(data.comments);
-
-  commentCount.textContent = data.comments.length;
-  if (data.comments.length > 5) {
-    commentsLoader.classList.remove('hidden');
-    commentsLoader.addEventListener('click', () => {
-
-    })
-    const comments = commentList.querySelectorAll('li');
-    for (let i = 5; i < comments.length; i++) {
-      comments[i].classList.add('hidden');
-    }
-  } else {
-    commentsLoader.classList.add('hidden');
-  }
-};
-
 export { showBigPic };
-

@@ -25,29 +25,35 @@ const isEsc = (evt) => evt.key === 'Escape';
 
 // валидация хэштегов
 
-const MAX_HASHTAGS_COUNT = 5;
-const MIN_HASHTAG_LENGTH = 2;
-const MAX_HASHTAG_LENGTH = 20;
+const HASHTAGS_COUNT = 5;
+const HASHTAG_MIN_LENGTH = 2;
+const HASHTAG_MAX_LENGTH = 20;
 const INVALID_HASHTAG_SYMBOLS = /\W+/gi;
+// const HASHTAG_REG_EXP = /#[а-яёa-z\d]{1,19}/gi;
 
 const isFittingTag = (tag) => {
-  const valid = tag.slice(0,1) === '#' && tag.slice(1).length <= MAX_HASHTAG_LENGTH && tag.slice(1).length >= MIN_HASHTAG_LENGTH && !INVALID_HASHTAG_SYMBOLS.test(tag.slice(1));
+  const valid = tag.slice(0,1) === '#' && tag.slice(1).length <= HASHTAG_MAX_LENGTH && tag.length >= HASHTAG_MIN_LENGTH && !INVALID_HASHTAG_SYMBOLS.test(tag.slice(1));
   return valid;
-}
+};
+// const isFittingTag = (tag) => {
+//   const valid = HASHTAG_REG_EXP.test(tag);
+//   return valid;
+// };
 
 const isCountValid = (tags) => {
-  return tags.length <= MAX_HASHTAGS_COUNT;
-}
+  const countValid = tags.length <= HASHTAGS_COUNT;
+  return countValid;
+};
 
 const hasUniqueTags = (tags) => {
   const normalized = tags.map((tag) => tag.toLowerCase());
   return normalized.length === new Set(normalized).size;
-}
+};
 
 const validateTags = (tags) => {
   const prepared = tags.trim().split(' ');
   return isCountValid(prepared) && hasUniqueTags(prepared) && prepared.every(isFittingTag);
-}
+};
 
 
 export {getRandomInteger, checkStringLength, isEsc, validateTags};
