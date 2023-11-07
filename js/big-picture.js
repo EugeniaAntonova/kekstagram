@@ -42,32 +42,34 @@ const renderComments = (comments) => {
   commentList.append(fragment);
 };
 
-const showMoreComments = (hiddenComments) => {
-  const hiddenCommentsArray = [...hiddenComments];
-  const nextComments = hiddenCommentsArray.slice(0, 5);
-  nextComments.forEach((comment) => {
-    comment.classList.remove('hidden');});
-
-  if (nextComments.length === 0) {
-    commentsLoader.classList.add('hidden');
-  }
-};
 
 const commentsAmountControl = () => {
-  const comments = commentList.children;
+  const INCREMENT = 5;
+  let commentsShown = 0;
+  let commentsToShow = 5;
+  let comments = commentList.children;
 
   if (comments.length > 5) {
-    for (let i = 5; i < comments.length; i++) {
-      comments[i].classList.add('hidden');
-    }
-
-    const hiddenComments = commentList.getElementsByClassName('hidden');
-
+    comments = [...comments];
+    comments.slice(5).forEach((comment) => comment.classList.add('hidden'));
+    commentsShown += INCREMENT;
+    commentsToShow += INCREMENT;
     commentsLoader.classList.remove('hidden');
 
-    const onLoaderClick = () => {showMoreComments(hiddenComments);};
+    const showMoreComments = () => {
+      comments.slice(commentsShown, commentsToShow).forEach((comment) => {
+        comment.classList.remove('hidden');
+      });
+      commentsShown += INCREMENT;
+      commentsToShow += INCREMENT;
+      const hiddenComments = commentList.getElementsByClassName('hidden');
+      if (hiddenComments.length === 0) {
+        commentsLoader.classList.add('hidden');
+      }
+    };
 
-    commentsLoader.addEventListener('click', onLoaderClick);
+    commentsLoader.addEventListener('click', showMoreComments);
+
   }
 };
 
