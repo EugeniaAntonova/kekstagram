@@ -1,4 +1,4 @@
-import { validateTags } from './utils.js';
+import { validateTags, filtersRanges } from './utils.js';
 import { isEsc } from './utils.js';
 const photoInput = document.querySelector('#upload-file');
 const body = document.querySelector('body');
@@ -10,6 +10,9 @@ const previews = document.querySelectorAll('.effects__preview');
 const hashtagField = document.querySelector('.text__hashtags');
 const descriptionField = document.querySelector('.text__description');
 const filters = document.querySelector('.effects__list');
+const sliderContainer = document.querySelector('.effect-level');
+const filtersSlider = document.querySelector('.effect-level__slider');
+const filterDepthInput = document.querySelector('.effect-level__value');
 const buttonSmaller = document.querySelector('.scale__control--smaller');
 const buttonBigger = document.querySelector('.scale__control--bigger');
 const scaleControlInput = document.querySelector('.scale__control--value');
@@ -70,12 +73,58 @@ const changeSize = (change) => {
 const onBiggerButtonClick = () => changeSize(IMAGE_SIZE_STEP);
 const onSmallerButtonClick = () => changeSize(-IMAGE_SIZE_STEP);
 
-// -----------handling effects
+// -----------------------------------------------------handling effects
+
+noUiSlider.create(filtersSlider, {
+  range: {
+    min: 0,
+    max: 1
+  },
+  start: 0.5,
+  step: 0.1,
+  connect: 'lower'
+});
 
 const addEffect = (input) => {
   const image = imagePreview.querySelector('img');
   image.setAttribute('class', '');
-  image.classList.add(`effects__preview--${input.value}`);
+
+  if (input.value !== 'none') {
+    sliderContainer.classList.remove('hidden');
+    image.classList.add(`effects__preview--${input.value}`);
+    const range = filtersRanges[input.value];
+    const min = range.min;
+    const max = range.max;
+    const step = range.step;
+    const style = range.filter;
+
+    const adjustSlider = () => {
+      filterDepthInput.value = max;
+      filtersSlider.noUiSlider.updateOptions ({
+        range: {
+          min: min,
+          max: max
+        },
+        start: max,
+        step: step
+      });
+    };
+
+    adjustSlider();
+    filtersSlider.noUiSlider.on('update', () => {
+      filterDepthInput.value = filtersSlider.noUiSlider.get();
+      if (input.value === 'marvin') {
+        image.style.filter = `${style}(${filterDepthInput.value}%)`;
+      } else if (input.value === 'phobos') {
+        image.style.filter = `${style}(${filterDepthInput.value}px)`;
+      } else {
+        image.style.filter = `${style}(${filterDepthInput.value})`;
+      }
+    });
+  } else {
+    sliderContainer.classList.add('hidden');
+    image.removeAttribute('style');
+  }
 };
 
 const chooseFilter = (evt) => {
@@ -112,6 +161,7 @@ const hideModal = () => {
 const showModal = () => {
   uploadOverlay.classList.remove('hidden');
   body.classList.add('modal-open');
+  sliderContainer.classList.add('hidden');
 
   document.addEventListener('keydown', onEsc);
   uploadCancelButton.addEventListener('click', hideModal);

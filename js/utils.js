@@ -55,5 +55,37 @@ const validateTags = (tags) => {
   return isCountValid(prepared) && hasUniqueTags(prepared) && prepared.every(isFittingTag);
 };
 
+const filtersRanges = {
+  'chrome': {
+    min: 0,
+    max: 1,
+    step: 0.1,
+    filter: 'grayscale'
+  },
+  'sepia': {
+    min: 0,
+    max: 1,
+    step: 0.1,
+    filter: 'sepia'
+  },
+  'marvin': {
+    min: 0,
+    max: 100,
+    step: 1,
+    filter: 'invert'
+  },
+  'phobos': {
+    min: 0,
+    max: 3,
+    step: 0.1,
+    filter: 'blur'
+  },
+  'heat': {
+    min: 1,
+    max: 3,
+    step: 0.1,
+    filter: 'brightness'
+  }
+};
 
-export {getRandomInteger, checkStringLength, isEsc, validateTags};
+export {getRandomInteger, checkStringLength, isEsc, validateTags, filtersRanges};
