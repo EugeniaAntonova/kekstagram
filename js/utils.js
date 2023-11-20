@@ -51,8 +51,12 @@ const hasUniqueTags = (tags) => {
 };
 
 const validateTags = (tags) => {
-  const prepared = tags.trim().split(' ');
-  return isCountValid(prepared) && hasUniqueTags(prepared) && prepared.every(isFittingTag);
+  if (tags === '') {
+    return true;
+  } else {
+    const prepared = tags.trim().split(' ');
+    return isCountValid(prepared) && hasUniqueTags(prepared) && prepared.every(isFittingTag);
+  }
 };
 
 const filtersRanges = {
