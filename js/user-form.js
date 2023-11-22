@@ -33,9 +33,71 @@ pristine.addValidator(
   'Неправильно заполнены теги (образец #19буквИлиЦифр, без повторений)'
 );
 
+
+// ----------------------------- sending form
+
+const onSendSuccess = () => {
+  const success = document.querySelector('#success').content.querySelector('.success');
+  const successMessage = success.cloneNode(true);
+  const closeButton = successMessage.querySelector('.success__button');
+
+  const hideSuccess = () => {
+    body.removeChild(successMessage);
+    closeButton.removeEventListener('click', hideSuccess);
+    document.removeEventListener('keydown', onSuccessEsc);
+  };
+  function onSuccessEsc (evt) {
+    if (isEsc(evt)) {
+      hideSuccess();
+    }
+  }
+  function onSuccessOverlayClick (evt) {
+    const element = evt.target;
+    if (element.classList.contains('success')) {
+      hideSuccess();
+    }
+  }
+  closeButton.addEventListener('click', hideSuccess);
+  document.addEventListener('keydown', onSuccessEsc);
+  successMessage.addEventListener('click', onSuccessOverlayClick);
+  body.appendChild(successMessage);
+};
+
+const onSendError = () => {
+  const error = document.querySelector('#error').content.querySelector('.error');
+  const errorMessage = error.cloneNode(true);
+  const closeButton = errorMessage.querySelector('.error__button');
+
+  const hideError = () => {
+    body.removeChild(errorMessage);
+    closeButton.removeEventListener('click', hideError);
+    document.removeEventListener('keydown', onErrorEsc);
+  };
+  function onErrorEsc (evt) {
+    if (isEsc(evt)) {
+      hideError();
+    }
+  }
+  function onErrorOverlayClick (evt) {
+    const element = evt.target;
+    if (element.classList.contains('error')) {
+      hideError();
+    }
+  }
+  closeButton.addEventListener('click', hideError);
+  document.addEventListener('keydown', onErrorEsc);
+  errorMessage.addEventListener('click', onErrorOverlayClick);
+  body.appendChild(errorMessage);
+};
+
 const onFormSubmit = (evt) => {
   evt.preventDefault();
-  pristine.validate();
+  const isValid = pristine.validate();
+  if (isValid) {
+    onSendSuccess();
+    onSendError();
+    hideModal();
+  }
 };
 
 // -------------------reading file and uploading previews
@@ -143,22 +205,24 @@ const onInputFocus = (evt) => {
 
 //--------------------------handling modal conditions
 
-const hideModal = () => {
+function hideModal () {
   uploadOverlay.classList.add('hidden');
   body.classList.remove('modal-open');
 
   document.removeEventListener('keydown', onEsc);
   uploadCancelButton.removeEventListener('click', hideModal);
   photoInput.value = '';
-
+  hashtagField.value = '';
+  descriptionField.value = '';
   scaleControlInput.setAttribute('value', '100%');
+
   buttonBigger.removeEventListener('click', onBiggerButtonClick);
   buttonSmaller.removeEventListener('click', onSmallerButtonClick);
   filters.removeEventListener('input', chooseFilter);
   userForm.removeEventListener('submit', onFormSubmit);
-};
+}
 
-const showModal = () => {
+function showModal () {
   uploadOverlay.classList.remove('hidden');
   body.classList.add('modal-open');
   sliderContainer.classList.add('hidden');
@@ -176,7 +240,7 @@ const showModal = () => {
   descriptionField.addEventListener('focus', onInputFocus);
 
   userForm.addEventListener('submit', onFormSubmit);
-};
+}
 
 
 // ----------------------------------------------------util function i don`t know how to remove from here
