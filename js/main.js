@@ -1,6 +1,7 @@
-import { photosGallery } from './data.js';
+// import { photosGallery } from './data.js';
 import { renderPictures } from './pictures.js';
 import { modalControl } from './user-form.js';
+import { getData, onLoadFail } from './api.js';
 
-renderPictures(photosGallery());
+getData(renderPictures, onLoadFail);
 modalControl();
